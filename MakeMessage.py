@@ -6,7 +6,6 @@ import re
 def MM_news(news_link):
     n = ParseNews()
     regex = re.compile(r'[\n\r\t]')
-
     text = "<a href='" + n.host + str(news_link) + "'>" + str(regex.sub('', n.NewsTitle(news_link))) + "</a>" + '\n\n' + str(regex.sub('', n.GetDescriptionNews(news_link)))
     return text
 
@@ -47,3 +46,7 @@ def MM_adrecc(message):
         answer = text.adrecc_silino_text
 
     return answer
+
+def MM_help():
+    message = text.help
+    return message

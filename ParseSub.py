@@ -65,6 +65,24 @@ class ParseNews:
             return news
 
 
+    def NewPoster(self,new):
+        r = requests.get(self.url)
+        html = BS(r.content, 'html.parser')
+        check = 0
+
+        poster_link = []
+        news_poster = {}
+
+        links = self.NewsLink()
+        items = html.select('.article-content  p a img')
+        for i in items:
+            poster_link.append(i.get('src'))
+        for i in links:
+            news_poster[i] = poster_link[check]
+            check = check + 1
+
+        return str(self.host + news_poster[new])
+
 
 
         

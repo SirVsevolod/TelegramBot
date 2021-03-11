@@ -18,6 +18,10 @@ n = ParseNews()
 #Инициализация базы данных
 db = SQLighter('database.db')
 
+@dp.message_handler(commands=['help'])
+async def start_menu(message: types.Message):
+    await message.answer(MakeMessage.MM_help())
+
 
 @dp.message_handler(commands=['start'])
 async def start_menu(message: types.Message):
@@ -55,24 +59,24 @@ async def poshalka(message: types.Message):
     await message.answer_sticker('CAACAgIAAxkBAALYDWAsHl8mydZroM8QcSmiIB0VEvqEAAI9AAMULFEWM5bdrJaNaAQeBA')
 
 
-@dp.message_handler(text=['subscribe'])
+@dp.message_handler(commands=['subscribe'])
 async def subscribe(message: types.Message):
     if not db.subscriber_exist(message.from_user.id):
         db.add_subscriber(message.from_user.id)
-        await message.answer("welcome")
+        await message.answer("Вы подписались на рассылку новостей.")
     else:
         db.update_subscription(message.from_user.id, True)
-        await message.answer("nice")
+        await message.answer("Вы подписались на рассылку новостей.")
 
 
-@dp.message_handler(text=['unsubscribe'])
+@dp.message_handler(commands=['unsubscribe'])
 async def unsubscribe(message: types.Message):
     if not db.subscriber_exist(message.from_user.id):
         db.add_subscriber(message.from_user.id, False)
-        await message.answer("Вы не были подписаны")
+        await message.answer("Вы не подписаны на рассылку новостей.")
     else:
         db.update_subscription(message.from_user.id, False)
-        await message.answer("Вы успешно отписались")
+        await message.answer("Вы успешно отписались.")
 
 
 async def scheduled(wait_for):
@@ -85,8 +89,11 @@ async def scheduled(wait_for):
         if news:
             news.reverse()
             for new in news:
+                text = MakeMessage.MM_news(new)
+                photo = n.NewPoster(new)
                 for s in subscriptions:
-                    await bot.send_message(s[1], text=MakeMessage.MM_news(new), disable_notification=True, parse_mode='html')
+                    await bot.send_photo(s[1], caption=text, photo=photo, disable_notification=True, parse_mode='html')
+
 
 async def on_startup(x):
     asyncio.create_task(scheduled(3600))
